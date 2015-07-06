@@ -1,0 +1,15 @@
+﻿CREATE TABLE alunos (
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(255) NOT NULL,
+	dataNascimento DATE NOT NULL,
+	genero VARCHAR(30) NOT NULL,
+	cpf VARCHAR(15) NOT NULL
+);
+
+CREATE TABLE disciplinas (
+	id SERIAL PRIMARY KEY,
+	nome VARCHAR(255) NOT NULL,
+	periodo VARCHAR(5) NOT NULL,
+	nomeProfessor VARCHAR(255) NOT NULL,
+	vagas INT NOT NULL
+);
