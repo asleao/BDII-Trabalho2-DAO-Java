@@ -5,11 +5,13 @@
  */
 package br.edu.ifes.bd2dao.cdp;
 
+import br.edu.ifes.bd2dao.cgd.DisciplinaDAO;
+
 /**
  *
  * @author 20141BSI0566
  */
-public class Disciplina {
+public class Disciplina extends DisciplinaDAO{
     
     private Long id;
     private String nome;
