@@ -6,6 +6,7 @@
 package br.edu.ifes.bd2dao.cdp;
 
 import br.edu.ifes.bd2dao.cgd.DisciplinaDAO;
+import java.text.Normalizer;
 
 /**
  *
@@ -67,6 +68,11 @@ public class Disciplina extends DisciplinaDAO{
 
     public void setVagas(int vagas) {
         this.vagas = vagas;
+    }
+
+    @Override
+    public String toString() {
+        return "Disciplina{" + "id=" + id + ", nome=" + nome + ", periodo=" + periodo + ", professor=" + professor + ", vagas=" + vagas + '}';
     }
     
 }

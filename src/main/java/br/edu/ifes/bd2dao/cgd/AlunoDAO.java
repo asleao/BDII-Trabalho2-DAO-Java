@@ -149,7 +149,7 @@ public abstract class AlunoDAO implements DAO{
         if(validateFields(c, campo)){
             PreparedStatement stmt;
             try {
-                String sql = "SELECT * FROM alunos WHERE "+campo+" = ?; ";
+                String sql = "SELECT * FROM alunos WHERE CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
                 stmt = conexao.prepareStatement(sql);
                 
                 stmt.setString(1, valor);

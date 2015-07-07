@@ -6,6 +6,7 @@
 package br.edu.ifes.bd2dao.cgt;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
+import br.edu.ifes.bd2dao.cdp.Disciplina;
 import br.edu.ifes.bd2dao.cdp.Genero;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import java.util.Calendar;
@@ -53,8 +54,27 @@ public class Main {
 //        }
     }
     
+    public static void DisciplinaTest(){
+//        //Disciplina d = new Disciplina("Cálculo II", "2015/1", "Bruna Dalle Prane", 40);
+//        //d.inserir(d);
+//        
+        Disciplina d = new Disciplina();
+        d = d.selecionarTodos().get(0);
+        
+
+        try {
+            d = d.selecionarPor("nome", "Cálculo II").get(0);
+        } catch (FieldNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        d = d.selecionar(d.getId());
+        
+        System.out.println(d);
+    }
+    
     public static void main(String args[]){
-        
-        
+//        AlunoTest();
+//        DisciplinaTest();
     }
 }

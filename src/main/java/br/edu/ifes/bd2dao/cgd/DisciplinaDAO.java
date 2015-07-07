@@ -5,22 +5,17 @@
  */
 package br.edu.ifes.bd2dao.cgd;
 
-import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Disciplina;
-import br.edu.ifes.bd2dao.cdp.Genero;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -150,7 +145,7 @@ public abstract class DisciplinaDAO implements DAO{
         if(validateFields(c, campo)){
             PreparedStatement stmt;
             try {
-                String sql = "SELECT * FROM disciplinas WHERE "+campo+" = ?; ";
+                String sql = "SELECT * FROM disciplinas WHERE CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
                 stmt = conexao.prepareStatement(sql);
                 
                 stmt.setString(1, valor);
