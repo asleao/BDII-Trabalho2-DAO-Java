@@ -6,7 +6,9 @@
 package br.edu.ifes.bd2dao.cgt;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
+import br.edu.ifes.bd2dao.cdp.Genero;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class Main {
     
-    public static void main(String args[]){
+    public static void AlunoTest(){
         
 //        Aluno aluno = new Aluno("Breno Sampaio", Calendar.getInstance(), Genero.MASCULINO, "144.872.877-07");
 //        aluno.inserir(aluno);
@@ -38,17 +40,21 @@ public class Main {
 //            ex.printStackTrace();
 //        }
         
-        Aluno aluno = new Aluno();
+//        Aluno aluno = new Aluno();
         
-        try {
-            List<Aluno> alunos = aluno.selecionarPor("genero", "MASCULINO");
-            System.out.println("Qtd Alunos: "+alunos.size());
-            for(Aluno a : alunos){
-                System.out.println(a.getNome());
-            }
-        } catch (FieldNotFoundException ex) {
-            ex.printStackTrace();
-        }
+//        try {
+//            List<Aluno> alunos = aluno.selecionarPor("genero", "MASCULINO");
+//            System.out.println("Qtd Alunos: "+alunos.size());
+//            for(Aluno a : alunos){
+//                System.out.println(a));
+//            }
+//        } catch (FieldNotFoundException ex) {
+//            ex.printStackTrace();
+//        }
+    }
+    
+    public static void main(String args[]){
+        
         
     }
 }

@@ -5,6 +5,7 @@
  */
 package br.edu.ifes.bd2dao.cdp;
 
+import br.edu.ifes.bd2dao.cgd.AlunoDAO;
 import java.util.Calendar;
 
 /**
@@ -78,4 +79,8 @@ public class Aluno extends AlunoDAO{
         this.cpf = cpf;
     }
     
+    @Override
+    public String toString() {
+        return "Aluno{" + "id=" + id + ", nome=" + nome + ", dataNascimento=" + dataNascimento + ", genero=" + genero + ", cpf=" + cpf + '}';
+    }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.edu.ifes.bd2dao.cdp;
+package br.edu.ifes.bd2dao.cgd;
 
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
