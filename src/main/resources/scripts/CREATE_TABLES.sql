@@ -13,3 +13,9 @@ CREATE TABLE disciplinas (
 	nomeProfessor VARCHAR(255) NOT NULL,
 	vagas INT NOT NULL
 );
+
+CREATE TABLE matriculas (
+        id SERIAL PRIMARY KEY,
+        idAluno INT NOT NULL REFERENCES alunos(id),
+        idDisciplina INT NOT NULL REFERENCES disciplinas(id)
+);

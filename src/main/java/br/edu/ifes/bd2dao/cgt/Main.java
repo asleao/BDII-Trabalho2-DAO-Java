@@ -7,12 +7,8 @@ package br.edu.ifes.bd2dao.cgt;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Disciplina;
-import br.edu.ifes.bd2dao.cdp.Genero;
+import br.edu.ifes.bd2dao.cdp.Matricula;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
-import java.util.Calendar;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -73,8 +69,28 @@ public class Main {
         System.out.println(d);
     }
     
+    public static void MatriculaTest(){
+//        Aluno a = new Aluno();
+//        a = a.selecionarTodos().get(0);
+//        
+//        Disciplina d = new Disciplina();
+//        d = d.selecionarTodos().get(0);
+//        
+//        Matricula m = new Matricula();
+//        m.setAluno(a);
+//        m.setDisciplina(d);
+//        
+//        m.inserir(m);
+        
+//        m =  m.selecionarTodos().get(0);
+//        System.out.println(m);
+        
+        
+    }
+    
     public static void main(String args[]){
 //        AlunoTest();
 //        DisciplinaTest();
+        MatriculaTest();
     }
 }
