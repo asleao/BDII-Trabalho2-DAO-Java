@@ -9,7 +9,7 @@
 CREATE TABLE disciplinas (
 	id SERIAL PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
-	periodo VARCHAR(5) NOT NULL,
+	periodo VARCHAR(6) NOT NULL,
 	nomeProfessor VARCHAR(255) NOT NULL,
 	vagas INT NOT NULL
 );
