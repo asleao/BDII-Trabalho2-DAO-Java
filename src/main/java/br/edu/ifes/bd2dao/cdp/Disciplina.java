@@ -11,6 +11,7 @@ package br.edu.ifes.bd2dao.cdp;
  */
 public class Disciplina {
     
+    private Long id;
     private String nome;
     private String periodo;
     private String professor;
@@ -25,7 +26,14 @@ public class Disciplina {
         this.professor = professor;
         this.vagas = vagas;
     }
-    
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
     
     public String getNome() {
         return nome;
