@@ -6,7 +6,6 @@
 package br.edu.ifes.bd2dao.cdp;
 
 import br.edu.ifes.bd2dao.cgd.DisciplinaDAO;
-import java.text.Normalizer;
 
 /**
  *
