@@ -183,8 +183,8 @@ public abstract class MatriculaDAO implements DAO{
                 Matricula m = new Matricula();
                 
                 m.setId(rs.getLong("id"));
-                Long idAluno = rs.getLong("idAluno");
-                Long idDisciplina = rs.getLong("idDisciplina");
+                Long idAluno = rs.getLong("aluno");
+                Long idDisciplina = rs.getLong("disciplina");
                 
                 Aluno a = new Aluno();
                 a = a.selecionar(idAluno);

@@ -7,7 +7,7 @@ package br.edu.ifes.bd2dao.cgd;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Genero;
-import br.edu.ifes.bd2dao.cgd.ConexaoPostgres;
+import br.edu.ifes.bd2dao.cdp.Matricula;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
 import java.lang.reflect.Field;
@@ -16,12 +16,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -226,4 +223,37 @@ public abstract class AlunoDAO implements DAO{
         return false;
     }
     
+    public List<Aluno> selecionarMatriculados(int idDisciplina){
+        
+        List<Aluno> alunos = new ArrayList<>();
+        Matricula m = new Matricula();
+        
+        try {
+            List<Matricula> matriculas = m.selecionarPor("disciplina", Integer.toString(idDisciplina));
+            for (Matricula mat : matriculas) {
+                alunos.add(mat.getAluno());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return alunos;
+    }
+    
+    public List<Aluno> selecionarMatriculados(String nomeDisciplina, String periodo){
+        
+        List<Aluno> alunos = new ArrayList<>();
+        Matricula m = new Matricula();
+        
+        try {
+            List<Matricula> matriculas = m.selecionarPor("disciplina", Integer.toString(idDisciplina));
+            for (Matricula mat : matriculas) {
+                alunos.add(mat.getAluno());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return alunos;
+    }
 }

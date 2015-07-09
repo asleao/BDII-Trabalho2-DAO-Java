@@ -6,6 +6,7 @@
 	cpf VARCHAR(15) NOT NULL
 );
 
+
 CREATE TABLE disciplinas (
 	id SERIAL PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
@@ -16,6 +17,6 @@ CREATE TABLE disciplinas (
 
 CREATE TABLE matriculas (
         id SERIAL PRIMARY KEY,
-        idAluno INT NOT NULL REFERENCES alunos(id),
-        idDisciplina INT NOT NULL REFERENCES disciplinas(id)
+        aluno INT NOT NULL REFERENCES alunos(id),
+        disciplina INT NOT NULL REFERENCES disciplinas(id)
 );

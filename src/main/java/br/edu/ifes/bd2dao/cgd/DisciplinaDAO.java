@@ -137,9 +137,42 @@ public abstract class DisciplinaDAO implements DAO{
         return disciplinas;
     }
 
+    private String buildWhereClause(List<String> campos, List<String> valores){
+        String sql = "";
+        
+        int i = 1;
+        for (String campo : campos) {
+            
+            sql += "CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
+            if(i < campos.size())
+                sql += " AND ";
+            i++;
+        }
+        
+        return sql;
+    }
+    
     @Override
-    public List<Disciplina> selecionarPor(String campo, String valor) throws FieldNotFoundException{
+    public List<Disciplina> selecionarPor(List<String> campos, List<String> valores) throws FieldNotFoundException{
+        
+        if(campos.size() != valores.size()){
+            //TODO: Throw exception
+            return null;
+        }
+        
         Class c = Disciplina.class;
+        //Verificar se os campos são válidos
+        boolean validFields = true;
+        for (String campo : campos) {
+            validFields = validFields && (validateFields(c, campo));
+        }
+        
+        if(validFields){
+            String where = buildWhereClause(campos, valores);
+        }
+        
+        
+        
         List<Disciplina> disciplinas = new ArrayList<>();
         
         if(validateFields(c, campo)){
