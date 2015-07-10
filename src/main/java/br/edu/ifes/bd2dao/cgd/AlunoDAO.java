@@ -6,6 +6,7 @@
 package br.edu.ifes.bd2dao.cgd;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
+import br.edu.ifes.bd2dao.cdp.Disciplina;
 import br.edu.ifes.bd2dao.cdp.Genero;
 import br.edu.ifes.bd2dao.cdp.Matricula;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
@@ -18,13 +19,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author 20141BSI0566
  */
-public abstract class AlunoDAO implements DAO{
+public abstract class AlunoDAO extends DAO{
     
     private Connection conexao = ConexaoPostgres.getInstance();
     
@@ -139,29 +144,33 @@ public abstract class AlunoDAO implements DAO{
     }
 
     @Override
-    public List<Aluno> selecionarPor(String campo, String valor) throws FieldNotFoundException{
+    public List<Aluno> selecionarPor(HashMap<String, String> conditions) throws FieldNotFoundException{
+        
         Class c = Aluno.class;
+        
+        //Verificar se os campos são válidos
+        Set<String> campos = conditions.keySet();
+
+        this.validateFields(c, campos);
+        
+        String where = buildWhereClause(campos);
+        String sql = "SELECT * FROM alunos WHERE "+where;
+        
         List<Aluno> alunos = new ArrayList<>();
         
-        if(validateFields(c, campo)){
-            PreparedStatement stmt;
-            try {
-                String sql = "SELECT * FROM alunos WHERE CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
-                stmt = conexao.prepareStatement(sql);
-                
-                stmt.setString(1, valor);
-                
-                ResultSet rs = stmt.executeQuery();
-                
-                alunos = fetchAlunos(rs);
-                
-                stmt.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            
-        }else{
-            throw new FieldNotFoundException();
+        PreparedStatement stmt;
+        try {
+            stmt = conexao.prepareStatement(sql);
+
+            this.bindParams(stmt, conditions);
+
+            ResultSet rs = stmt.executeQuery();
+
+            alunos = fetchAlunos(rs);
+
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         
         return alunos;
@@ -169,8 +178,12 @@ public abstract class AlunoDAO implements DAO{
 
     @Override
     public Aluno selecionar(Long id){
+        
         try {
-            List<Aluno> alunos = this.selecionarPor("id", id.toString());
+            HashMap<String, String> conditions = new HashMap<String, String>();
+            conditions.put("id", id.toString());
+            
+            List<Aluno> alunos = this.selecionarPor(conditions);
             if(alunos.size() > 0)
                 return alunos.get(0);
         } catch (FieldNotFoundException ex) {
@@ -227,9 +240,11 @@ public abstract class AlunoDAO implements DAO{
         
         List<Aluno> alunos = new ArrayList<>();
         Matricula m = new Matricula();
+        HashMap<String, String> mCond = new HashMap<>();
+        mCond.put("disciplina", Integer.toString(idDisciplina));
         
         try {
-            List<Matricula> matriculas = m.selecionarPor("disciplina", Integer.toString(idDisciplina));
+            List<Matricula> matriculas = m.selecionarPor(mCond);
             for (Matricula mat : matriculas) {
                 alunos.add(mat.getAluno());
             }
@@ -242,18 +257,20 @@ public abstract class AlunoDAO implements DAO{
     
     public List<Aluno> selecionarMatriculados(String nomeDisciplina, String periodo){
         
-        List<Aluno> alunos = new ArrayList<>();
-        Matricula m = new Matricula();
+        Disciplina d = new Disciplina();
+        HashMap<String, String> dCond = new HashMap<>();
+        dCond.put("nome", nomeDisciplina);
+        dCond.put("periodo", periodo);
+        List<Disciplina> disciplinas;
         
         try {
-            List<Matricula> matriculas = m.selecionarPor("disciplina", Integer.toString(idDisciplina));
-            for (Matricula mat : matriculas) {
-                alunos.add(mat.getAluno());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            disciplinas = d.selecionarPor(dCond);
+            if(disciplinas.size() > 0)
+                d = disciplinas.get(0);
+        } catch (FieldNotFoundException ex) {
+            ex.printStackTrace();
         }
         
-        return alunos;
+        return this.selecionarMatriculados(d.getId().intValue());
     }
 }

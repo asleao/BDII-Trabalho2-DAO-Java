@@ -10,19 +10,20 @@ import br.edu.ifes.bd2dao.cdp.Disciplina;
 import br.edu.ifes.bd2dao.cdp.Matricula;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
  * @author 20141BSI0566
  */
-public abstract class MatriculaDAO implements DAO{
+public abstract class MatriculaDAO extends DAO{
     
     private Connection conexao = ConexaoPostgres.getInstance();
     
@@ -130,38 +131,44 @@ public abstract class MatriculaDAO implements DAO{
     }
 
     @Override
-    public List<Matricula> selecionarPor(String campo, String valor) throws FieldNotFoundException{
+    public List<Matricula> selecionarPor(HashMap<String, String> conditions) throws FieldNotFoundException{
         Class c = Matricula.class;
+        
+        //Verificar se os campos são válidos
+        Set<String> campos = conditions.keySet();
+
+        this.validateFields(c, campos);
+        
+        String where = buildWhereClause(campos);
+        String sql = "SELECT * FROM matriculas WHERE "+where;
+        
         List<Matricula> matriculas = new ArrayList<>();
         
-        if(validateFields(c, campo)){
-            PreparedStatement stmt;
-            try {
-                String sql = "SELECT * FROM matriculas WHERE CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
-                stmt = conexao.prepareStatement(sql);
-                
-                stmt.setString(1, valor);
-                
-                ResultSet rs = stmt.executeQuery();
-                
-                matriculas = fetchMatriculas(rs);
-                
-                stmt.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        PreparedStatement stmt;
+        try {
+            stmt = conexao.prepareStatement(sql);
+
+            this.bindParams(stmt, conditions);
             
-        }else{
-            throw new FieldNotFoundException();
+            ResultSet rs = stmt.executeQuery();
+
+            matriculas = fetchMatriculas(rs);
+
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        
+            
         return matriculas;
     }
 
     @Override
     public Matricula selecionar(Long id){
         try {
-            List<Matricula> matriculas = this.selecionarPor("id", id.toString());
+            HashMap<String, String> conditions = new HashMap<>();
+            conditions.put("id", id.toString());
+            
+            List<Matricula> matriculas = this.selecionarPor(conditions);
             if(matriculas.size() > 0)
                 return matriculas.get(0);
         } catch (FieldNotFoundException ex) {
@@ -206,16 +213,5 @@ public abstract class MatriculaDAO implements DAO{
         return fetchedMatriculas;
     }
     
-    private boolean validateFields(Class c, String campo){
-        
-        Field fields[] = c.getDeclaredFields();
-        
-        for(Field f : fields){
-            if (f.getName().equalsIgnoreCase(campo))
-                return true;
-        }
-        
-        return false;
-    }
     
 }

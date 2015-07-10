@@ -13,15 +13,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
  * @author 20141BSI0566
  */
-public abstract class DisciplinaDAO implements DAO{
+public abstract class DisciplinaDAO extends DAO{
     
     private Connection conexao = ConexaoPostgres.getInstance();
     
@@ -137,72 +138,48 @@ public abstract class DisciplinaDAO implements DAO{
         return disciplinas;
     }
 
-    private String buildWhereClause(List<String> campos, List<String> valores){
-        String sql = "";
-        
-        int i = 1;
-        for (String campo : campos) {
-            
-            sql += "CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
-            if(i < campos.size())
-                sql += " AND ";
-            i++;
-        }
-        
-        return sql;
-    }
+    
     
     @Override
-    public List<Disciplina> selecionarPor(List<String> campos, List<String> valores) throws FieldNotFoundException{
-        
-        if(campos.size() != valores.size()){
-            //TODO: Throw exception
-            return null;
-        }
+    public List<Disciplina> selecionarPor(HashMap<String, String> conditions) throws FieldNotFoundException{
         
         Class c = Disciplina.class;
         //Verificar se os campos são válidos
-        boolean validFields = true;
-        for (String campo : campos) {
-            validFields = validFields && (validateFields(c, campo));
-        }
+        Set<String> campos = conditions.keySet();
+
+        this.validateFields(c, campos);
         
-        if(validFields){
-            String where = buildWhereClause(campos, valores);
-        }
-        
+        String where = buildWhereClause(campos);
+        String sql = "SELECT * FROM disciplinas WHERE "+where;        
         
         
         List<Disciplina> disciplinas = new ArrayList<>();
         
-        if(validateFields(c, campo)){
-            PreparedStatement stmt;
-            try {
-                String sql = "SELECT * FROM disciplinas WHERE CAST("+campo+" as varchar)"+" = CAST( ? as varchar) ";
-                stmt = conexao.prepareStatement(sql);
-                
-                stmt.setString(1, valor);
-                
-                ResultSet rs = stmt.executeQuery();
-                
-                disciplinas = fetchDisciplinas(rs);
-                
-                stmt.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+        PreparedStatement stmt;
+        try {
+            stmt = conexao.prepareStatement(sql);
+
+            bindParams(stmt, conditions);
             
-        }else{
-            throw new FieldNotFoundException();
+            ResultSet rs = stmt.executeQuery();
+
+            disciplinas = fetchDisciplinas(rs);
+
+            stmt.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        
+                    
         return disciplinas;
     }
 
     @Override
     public Disciplina selecionar(Long id){
         try {
-            List<Disciplina> disciplinas = this.selecionarPor("id", id.toString());
+            HashMap<String, String> conditions = new HashMap<String, String>();
+            conditions.put("id", id.toString());
+            
+            List<Disciplina> disciplinas = this.selecionarPor(conditions);
             if(disciplinas.size() > 0)
                 return disciplinas.get(0);
         } catch (FieldNotFoundException ex) {
@@ -239,18 +216,6 @@ public abstract class DisciplinaDAO implements DAO{
         }
         
         return fetchedDisciplinas;
-    }
-    
-    private boolean validateFields(Class c, String campo){
-        
-        Field fields[] = c.getDeclaredFields();
-        
-        for(Field f : fields){
-            if (f.getName().equalsIgnoreCase(campo))
-                return true;
-        }
-        
-        return false;
     }
     
 }
