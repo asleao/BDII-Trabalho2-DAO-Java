@@ -6,6 +6,7 @@
 package br.edu.ifes.bd2dao.cgd;
 
 import br.edu.ifes.bd2dao.cdp.Disciplina;
+import br.edu.ifes.bd2dao.cdp.Matricula;
 import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
 import java.lang.reflect.Field;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -187,6 +190,25 @@ public abstract class DisciplinaDAO extends DAO{
         }
         
         return null;
+    }
+    
+    public List<Disciplina> selecionarMatriculadas(int idAluno){
+        Matricula matricula = new Matricula();
+        
+        HashMap<String, String> mCond = new HashMap<>();
+        mCond.put("aluno", Integer.toString(idAluno));
+        List<Disciplina> disciplinas = new ArrayList<>();
+        
+        try {
+            List<Matricula> matriculas = matricula.selecionarPor(mCond);
+            for (Matricula m : matriculas) {
+                disciplinas.add(m.getDisciplina());
+            }
+        } catch (FieldNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        return disciplinas;
     }
     
     
