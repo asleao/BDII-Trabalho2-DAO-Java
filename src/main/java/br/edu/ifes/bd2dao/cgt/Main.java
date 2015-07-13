@@ -7,12 +7,8 @@ package br.edu.ifes.bd2dao.cgt;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Disciplina;
-import br.edu.ifes.bd2dao.cdp.Matricula;
-import br.edu.ifes.bd2dao.exceptions.FieldNotFoundException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -41,53 +37,63 @@ public class Main {
 //            ex.printStackTrace();
 //        }
         
+        /*Seleciona os alunos matriculados em Cálculo II*/
 //        Aluno aluno = new Aluno();
-        
-//        try {
-//            List<Aluno> alunos = aluno.selecionarPor("genero", "MASCULINO");
-//            System.out.println("Qtd Alunos: "+alunos.size());
-//            for(Aluno a : alunos){
-//                System.out.println(a));
-//            }
-//        } catch (FieldNotFoundException ex) {
-//            ex.printStackTrace();
+//        Disciplina d = new Disciplina();
+//        d = d.selecionarTodos().get(0);
+//        List<Aluno> as = aluno.selecionarMatriculados("Cálculo II","2015/1");
+//        for (Aluno a : as) {
+//            System.out.println(a);
 //        }
     }
     
     public static void DisciplinaTest(){
-//        //Disciplina d = new Disciplina("Cálculo II", "2015/1", "Bruna Dalle Prane", 40);
-//        //d.inserir(d);
+        
+        /*Insere uma disciplina no banco*/
+//        Disciplina d = new Disciplina("Cálculo II", "2015/1", "Bruna Dalle Prane", 40);
+//        d.inserir(d);
+        
+        /*Testa 3 formas diferentes de seleção*/
+//        Disciplina d = new Disciplina();
+//        d = d.selecionarTodos().get(0);
+//        HashMap<String, String> conditions = new HashMap<>();
+//
+//        try {
+//            
+//            d = d.selecionarPor(conditions).get(0);
+//        } catch (FieldNotFoundException ex) {
+//            ex.printStackTrace();
+//        }
 //        
-        Disciplina d = new Disciplina();
-        d = d.selecionarTodos().get(0);
+//        d = d.selecionar(d.getId());
+//        
+//        System.out.println(d);
         
-
-        try {
-            d = d.selecionarPor("nome", "Cálculo II").get(0);
-        } catch (FieldNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        
-        d = d.selecionar(d.getId());
-        
-        System.out.println(d);
+        /*Seleciona todas as disciplinas em que o aluno está matriculado*/
+//        Aluno a = new Aluno();
+//        Disciplina d = new Disciplina();
+//        a = a.selecionarTodos().get(0);
+//        List<Disciplina> disciplinas = d.selecionarMatriculadas(a.getId().intValue());
+//        for (Disciplina disciplina : disciplinas) {
+//             System.out.println(disciplina);
+//        }
     }
     
     public static void MatriculaTest(){
-        Aluno a = new Aluno();
-        a = a.selecionarTodos().get(0);
-//        
-        Disciplina d = new Disciplina();
-        d = d.selecionarTodos().get(0);
-//        
-        Matricula m = new Matricula();
-        m.setAluno(a);
-        m.setDisciplina(d);
         
+        /*Insere uma matrícula no banco*/
+//        Aluno a = new Aluno();
+//        a = a.selecionarTodos().get(0);        
+//        Disciplina d = new Disciplina();
+//        d = d.selecionarTodos().get(0);   
+//        Matricula m = new Matricula();
+//        m.setAluno(a);
+//        m.setDisciplina(d);
 //        m.inserir(m);
         
-        m =  m.selecionarTodos().get(0);
-        System.out.println(m);
+        /*Seleciona a primeira matricula do banco*/
+//        m =  m.selecionarTodos().get(0);
+//        System.out.println(m);
         
         
     }
@@ -134,21 +140,7 @@ public class Main {
         }
     }
     public static void main(String args[]){
-//        AlunoTest();
-//        DisciplinaTest();
-        //menu();
-// MatriculaTest();
-        Aluno a = new Aluno();
-        Disciplina d = new Disciplina();
-        try {
-            d = d.selecionarPor("nome", "TGS").get(0);
-            List<Aluno> alunos = a.selecionarMatriculados(d.getId().intValue());
-            for (Aluno al : alunos) {
-                System.out.println(al);
-            }
-        } catch (FieldNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        
+
+       
     }
 }

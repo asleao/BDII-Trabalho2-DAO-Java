@@ -12,6 +12,7 @@ import br.edu.ifes.bd2dao.cgd.MatriculaDAO;
  * @author breno
  */
 public class Matricula extends MatriculaDAO{
+    
     private Long id;
     private Disciplina disciplina;
     private Aluno aluno;
