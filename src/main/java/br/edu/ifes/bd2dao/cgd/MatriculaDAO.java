@@ -31,7 +31,7 @@ public abstract class MatriculaDAO extends DAO{
     public void inserir(Object obj) {
         Matricula matricula = (Matricula) obj;
         
-        String query = "INSERT INTO matriculas (idAluno,idDisciplina) "
+        String query = "INSERT INTO matriculas (aluno,disciplina) "
                       + "VALUES (?,?)";
                         
         try {
@@ -56,7 +56,7 @@ public abstract class MatriculaDAO extends DAO{
             throw new IdNotFoundException();
         }
         
-        String query = "UPDATE matriculas SET (idAluno, idDisciplina) "
+        String query = "UPDATE matriculas SET (aluno, disciplina) "
                       + "= (?,?) WHERE id = ?";
                         
         try {
