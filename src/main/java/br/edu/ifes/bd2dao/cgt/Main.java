@@ -7,8 +7,16 @@ package br.edu.ifes.bd2dao.cgt;
 
 import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Disciplina;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -116,14 +124,35 @@ public class Main {
                         Aluno aluno = new Aluno();
                         System.out.println("Nome:");
                         aluno.setNome(alunoScan.nextLine());
-                        System.out.println("Data de Nascimento:");
-//                        aluno.setDataNascimento(alunoScan.nextLine());
+                        System.out.println("Data de Nascimento (dd/MM/yyyy):");
+                        String dataRecebida = alunoScan.nextLine();                            
+                        {  
+                            try {
+                                if(!dataRecebida.contains("/")){
+                                    StringBuilder sb = new StringBuilder(dataRecebida);  
+                                    sb.insert(dataRecebida.length() - 4, '/');  
+                                    sb.insert(dataRecebida.length() - 6, '/');   
+                                    dataRecebida = sb.toString();
+                                }
+                                
+                                DateFormat df = new SimpleDateFormat("dd/MM/yyyy");  
+                                Date dataNas = df.parse(dataRecebida);
+                                Calendar dataNascimento = Calendar.getInstance();
+                                dataNascimento.setTime(dataNas);
+                                aluno.setDataNascimento(dataNascimento);    
+                                System.out.println(aluno.getDataNascimento().getTime());
+                                    
+                            } catch (ParseException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
                         System.out.println("Genero:");
 //                        aluno.setGenero(alunoScan.nextLine());
                         System.out.println("CPF:");
 //                        aluno.setCpf(alunoScan.next(null));
                         break;
-               case 2: 
+               case 2:
+                   
                        break;
                case 3: 
                        break;
@@ -140,7 +169,7 @@ public class Main {
         }
     }
     public static void main(String args[]){
-
+        menu();
        
     }
 }
