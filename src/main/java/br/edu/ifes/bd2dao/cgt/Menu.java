@@ -8,7 +8,9 @@ package br.edu.ifes.bd2dao.cgt;
 import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Disciplina;
 import br.edu.ifes.bd2dao.cdp.Genero;
+import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
 import br.edu.ifes.bd2dao.util.DateValidator;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,8 +19,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.beans.PropertyAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 
 /**
  *
@@ -44,7 +47,7 @@ public class Menu {
                     new Aluno().inserir(lerAluno());
                     break;
                 case 2:
-                    
+                    atualizarAluno();
                     break;
                 case 3:
                     deletarAluno();
@@ -59,6 +62,69 @@ public class Menu {
         }
     }
 
+    
+    private void atualizarAluno(){
+        Scanner sc = new Scanner(System.in);
+        
+        listarAlunos();
+        
+        System.out.println("\n Informe um ID:");
+        int id = sc.nextInt();
+        
+        Aluno a = new Aluno().selecionar(new Long(id));
+        
+        Field fields[] = Aluno.class.getDeclaredFields();
+        for (Field field : fields) {
+            if(! field.getName().equals("id")){
+                System.out.println("Deseja atualizar o campo ("+field.getName().toUpperCase()+") [n/s]?");
+                String opt = sc.next().toUpperCase();
+                if(opt.contains("S")){
+                    setValue(field, a);
+                }
+            }
+        }
+        
+        try {
+            a.atualizar(a);
+        } catch (IdNotFoundException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    //TODO: Melhore num FORK
+    private Object scanSpecificType(String type, Scanner sc){
+        
+        switch (type.toUpperCase()) {
+            case "STRING":
+                return sc.next();
+            case "GENERO":
+                
+                return Genero.valueOf(sc.nextLine());
+            case "CALENDAR":
+                return convertStringToCalendar(lerData(sc));
+            default:
+                return null;
+        }
+    }
+    
+    private void setValue(Field field, Aluno aluno){
+        
+        Object valorModificado = null;
+        
+        PropertyAccessor propAccessor = PropertyAccessorFactory.forBeanPropertyAccess(aluno);
+        Object valorAtual = propAccessor.getPropertyValue(field.getName());
+        
+        while(! valorAtual.equals(valorModificado)){
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Informe o valor de "+field.getName().toUpperCase()+": ");
+
+            valorModificado = scanSpecificType(field.getType().getSimpleName(), sc);
+
+            propAccessor.setPropertyValue(field.getName(), valorModificado);
+            valorAtual = propAccessor.getPropertyValue(field.getName());
+        }
+    }
+    
     public Aluno lerAluno() {
         Scanner alunoScan = new Scanner(System.in);
         Aluno aluno = new Aluno();
@@ -74,30 +140,41 @@ public class Menu {
 
         aluno.setDataNascimento(convertStringToCalendar(data));
 
-        System.out.println("Genero (MASCULINO, FEMININO, OUTROS):");
-        aluno.setGenero(Genero.valueOf(alunoScan.nextLine().toUpperCase()));
+        aluno.setGenero(lerGenero(alunoScan));
 
         String cpf = lerCpf(alunoScan);
-
-        if (!validarCpf(cpf)) {
-            System.out.println("Padrão de CPF inválido. Por favor, note que são necessários os pontos e o traços.");
+        while(! aluno.setCpf(cpf)){
             cpf = lerCpf(alunoScan);
         }
 
-        aluno.setCpf(cpf);
-
         return aluno;
+    }
+    
+    private Genero lerGenero(Scanner sc){
+        String possiveis = "(MASCULINO, FEMININO, OUTROS)";
+
+        String wanted = "";
+        
+        while(! existsInGenero(wanted)){
+            System.out.println("Genero "+possiveis+":");
+            wanted = sc.nextLine().toUpperCase();
+        }
+        
+        return Genero.valueOf(wanted);
+    }
+    
+    private boolean existsInGenero(String wanted){
+        Genero generos[] = Genero.values();
+        for (Genero genero : generos) {
+            if(genero.name().equals(wanted.toUpperCase()))
+                return true;
+        }
+        return false;
     }
 
     private String lerCpf(Scanner alunoScan) {
         System.out.println("CPF (xxx.xxx.xxx-xx):");
         return alunoScan.nextLine();
-    }
-
-    private boolean validarCpf(String cpf) {
-        Pattern p = Pattern.compile("/^d{3}.d{3}.d{3}-d{2}$/");
-        Matcher m = p.matcher(cpf);
-        return m.find();
     }
 
     private boolean validarData(String data) {
@@ -155,6 +232,12 @@ public class Menu {
     
     private List<Aluno> buscarMatriculados(){
         Disciplina d = selecionarDisciplina();
+        if(d == null){
+            System.out.println("Disciplina não encontrada!");
+            List<Aluno> alunos = new ArrayList<>();
+            return alunos;
+        }
+        
         return new Aluno().selecionarMatriculados(d.getId().intValue());
     }
     

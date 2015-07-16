@@ -9,6 +9,8 @@ import br.edu.ifes.bd2dao.cgd.AlunoDAO;
 import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -77,8 +79,21 @@ public class Aluno extends AlunoDAO{
         return cpf;
     }
 
-    public void setCpf(String cpf) {
+    public boolean setCpf(String cpf) {
+        
+        if (!validarCpf(cpf)) {
+            System.out.println("Padrão de CPF inválido. Por favor, note que são necessários os pontos e o traços.");
+            return false;
+        }
+        
         this.cpf = cpf;
+        return true;
+    }
+        
+    private boolean validarCpf(String cpf) {
+        Pattern p = Pattern.compile("^([0-9]{3}\\.){2}[0-9]{3}\\-[0-9]{2}$");
+        Matcher m = p.matcher(cpf);
+        return m.find();
     }
     
     private String beautifyDate(Calendar date){
