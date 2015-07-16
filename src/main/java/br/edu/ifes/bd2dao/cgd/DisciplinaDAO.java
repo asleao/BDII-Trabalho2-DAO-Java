@@ -192,6 +192,22 @@ public abstract class DisciplinaDAO extends DAO{
         return null;
     }
     
+    public Disciplina selecionar(String nome, String periodo){
+        try {
+            HashMap<String, String> conditions = new HashMap<String, String>();
+            conditions.put("nome", nome);
+            conditions.put("periodo", periodo);
+            
+            List<Disciplina> disciplinas = this.selecionarPor(conditions);
+            if(disciplinas.size() > 0)
+                return disciplinas.get(0);
+        } catch (FieldNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        return null;
+    }
+    
     public List<Disciplina> selecionarMatriculadas(int idAluno){
         Matricula matricula = new Matricula();
         

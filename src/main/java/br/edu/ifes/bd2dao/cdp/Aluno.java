@@ -6,6 +6,8 @@
 package br.edu.ifes.bd2dao.cdp;
 
 import br.edu.ifes.bd2dao.cgd.AlunoDAO;
+import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.date;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -79,8 +81,13 @@ public class Aluno extends AlunoDAO{
         this.cpf = cpf;
     }
     
+    private String beautifyDate(Calendar date){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return formatter.format(date.getTime());
+    }
+    
     @Override
     public String toString() {
-        return "Aluno{" + "id=" + id + ", nome=" + nome + ", dataNascimento=" + dataNascimento + ", genero=" + genero + ", cpf=" + cpf + '}';
+        return "Aluno{" + "id=" + id + ", nome=" + nome + ", dataNascimento=" + beautifyDate(dataNascimento) + ", genero=" + genero + ", cpf=" + cpf + '}';
     }
 }
