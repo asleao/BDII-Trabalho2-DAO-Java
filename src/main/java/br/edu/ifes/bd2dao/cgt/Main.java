@@ -106,70 +106,11 @@ public class Main {
         
     }
         
-    public static void menu(){
-        
-        Scanner menuEntrada = new Scanner(System.in);
-        int menu=-1;
-        while(menu!=0){
-            System.out.println("1 - Cadastrar Aluno");
-            System.out.println("2 - Atualizar Aluno");
-            System.out.println("3 - Deletar Aluno");                               
-            System.out.println("4 - Buscar alunos matriculados");
-            System.out.println("5 - Listar todos os alunos");     
-            System.out.println("0 - Sair");
-            menu = menuEntrada.nextInt();
-            switch (menu){
-               case 1:
-                        Scanner alunoScan = new Scanner(System.in);
-                        Aluno aluno = new Aluno();
-                        System.out.println("Nome:");
-                        aluno.setNome(alunoScan.nextLine());
-                        System.out.println("Data de Nascimento (dd/MM/yyyy):");
-                        String dataRecebida = alunoScan.nextLine();                            
-                        {  
-                            try {
-                                if(!dataRecebida.contains("/")){
-                                    StringBuilder sb = new StringBuilder(dataRecebida);  
-                                    sb.insert(dataRecebida.length() - 4, '/');  
-                                    sb.insert(dataRecebida.length() - 6, '/');   
-                                    dataRecebida = sb.toString();
-                                }
-                                
-                                DateFormat df = new SimpleDateFormat("dd/MM/yyyy");  
-                                Date dataNas = df.parse(dataRecebida);
-                                Calendar dataNascimento = Calendar.getInstance();
-                                dataNascimento.setTime(dataNas);
-                                aluno.setDataNascimento(dataNascimento);    
-                                System.out.println(aluno.getDataNascimento().getTime());
-                                    
-                            } catch (ParseException ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                        System.out.println("Genero:");
-//                        aluno.setGenero(alunoScan.nextLine());
-                        System.out.println("CPF:");
-//                        aluno.setCpf(alunoScan.next(null));
-                        break;
-               case 2:
-                   
-                       break;
-               case 3: 
-                       break;
-               case 4: 
-                       break;
-               case 5: 
-                       break;
-               case 6: 
-                       break;
-               case 7: 
-                       break;
-            }
-        
-        }
-    }
+    
+    
+    
     public static void main(String args[]){
-        menu();
-       
+        Menu menu = new Menu();
+        menu.load();
     }
 }
