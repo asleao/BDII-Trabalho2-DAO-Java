@@ -90,7 +90,7 @@ public class Aluno extends AlunoDAO{
         return true;
     }
         
-    private boolean validarCpf(String cpf) {
+    public static boolean validarCpf(String cpf) {
         Pattern p = Pattern.compile("^([0-9]{3}\\.){2}[0-9]{3}\\-[0-9]{2}$");
         Matcher m = p.matcher(cpf);
         return m.find();

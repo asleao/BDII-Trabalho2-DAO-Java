@@ -236,6 +236,25 @@ public abstract class AlunoDAO extends DAO{
         return false;
     }
     
+    public List<Disciplina> selecionarDisciplinas(){
+        List<Disciplina> disciplinas = new ArrayList<>();
+        HashMap<String, String> mCond = new HashMap<>();
+        Aluno a = (Aluno) this;
+        
+        mCond.put("aluno",a.getId().toString());
+        
+        try {
+            List<Matricula> matriculas = new Matricula().selecionarPor(mCond);
+            for (Matricula matricula : matriculas) {
+                disciplinas.add(matricula.getDisciplina());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return disciplinas;
+    }
+    
     public List<Aluno> selecionarMatriculados(int idDisciplina){
         
         List<Aluno> alunos = new ArrayList<>();
