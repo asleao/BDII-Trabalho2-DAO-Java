@@ -17,9 +17,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -30,6 +32,18 @@ import org.springframework.beans.PropertyAccessorFactory;
 public class Menu {
 
     DateValidator dateValidator = new DateValidator();
+    HashMap<String, String> messages = new HashMap<>();
+    
+    public Menu(){
+        this.messages.put("CPF", "CPF: (xxx.xxx.xxx-xx)");
+        this.messages.put("NOME", "Nome: ");
+        this.messages.put("ID", "Id: ");
+        this.messages.put("DATANASCIMENTO", "Data de Nascimento (dd/MM/yyyy):");
+        this.messages.put("GENERO", "Genero (MASCULINO, FEMININO, OUTROS):");
+        this.messages.put("PERIODO", "Período: (YYYY/S) : ");
+        this.messages.put("PROFESSOR", "Professor: ");
+        this.messages.put("VAGAS", "Vagas: ");
+    }
 
     public void load() {
         Scanner menuEntrada = new Scanner(System.in);
@@ -40,6 +54,10 @@ public class Menu {
             System.out.println("3 - Deletar Aluno");
             System.out.println("4 - Buscar alunos matriculados");
             System.out.println("5 - Listar todos os alunos");
+            System.out.println("6 - Cadastrar Disciplina");
+            System.out.println("7 - Listar Disciplinas");
+            System.out.println("8 - Buscar Disciplina");
+            System.out.println("9 - Disciplinas de um aluno");
             System.out.println("0 - Sair");
             menu = menuEntrada.nextInt();
             switch (menu) {
@@ -58,6 +76,16 @@ public class Menu {
                 case 5:
                     listarAlunos();
                     break;
+                case 6:
+                    new Disciplina().inserir(lerDisciplina());
+                    break;
+                case 7:
+                    listar(buscarDisciplinas());
+                    break;
+                case 8:
+                    System.out.println(selecionarDisciplina());
+                case 9:
+                    listarDisciplinasDeUmAluno();
             }
         }
     }
@@ -68,7 +96,7 @@ public class Menu {
         
         listarAlunos();
         
-        System.out.println("\n Informe um ID:");
+        System.out.println("\nInforme um ID:");
         int id = sc.nextInt();
         
         Aluno a = new Aluno().selecionar(new Long(id));
@@ -79,7 +107,7 @@ public class Menu {
                 System.out.println("Deseja atualizar o campo ("+field.getName().toUpperCase()+") [n/s]?");
                 String opt = sc.next().toUpperCase();
                 if(opt.contains("S")){
-                    setValue(field, a);
+                    setValue(field.getName(), a);
                 }
             }
         }
@@ -92,97 +120,88 @@ public class Menu {
     }
     
     //TODO: Melhore num FORK
-    private Object scanSpecificType(String type, Scanner sc){
+    private Object scanSpecific(String fieldName, Scanner sc, Class c) throws NoSuchFieldException{
         
-        switch (type.toUpperCase()) {
-            case "STRING":
-                return sc.next();
-            case "GENERO":
-                
-                return Genero.valueOf(sc.nextLine());
-            case "CALENDAR":
-                return convertStringToCalendar(lerData(sc));
-            default:
-                return null;
+        Field field = c.getDeclaredField(fieldName);
+        boolean valid = false;
+        Object value = null;
+        
+        while(!valid){
+            System.out.println(this.messages.get(fieldName.toUpperCase()));
+            String type = field.getType().getSimpleName();
+
+            switch (type.toUpperCase()) {
+                case "STRING":
+                    value = sc.nextLine();
+                    valid = true;
+                    break;
+                case "GENERO":
+                    String genero = sc.nextLine();
+                    valid = Genero.exists(genero);
+                    if(valid)
+                        value = Genero.valueOf(genero);
+                    break;
+                case "CALENDAR":
+                    String date = sc.nextLine();
+                    valid = this.dateValidator.validate(date);
+                    if(valid)
+                        value = convertStringToCalendar(date);
+                    break;
+                case "INT":
+                    value = sc.nextInt();
+                    valid = true;
+                    break;
+            }
         }
+        
+        return value;
     }
     
-    private void setValue(Field field, Aluno aluno){
+    
+    private void setValue(String field, Object objeto){
+        
+        PropertyAccessor propAccessor = PropertyAccessorFactory.forBeanPropertyAccess(objeto);   
+        Scanner sc = new Scanner(System.in);
         
         Object valorModificado = null;
+        Object valorAtual;
         
-        PropertyAccessor propAccessor = PropertyAccessorFactory.forBeanPropertyAccess(aluno);
-        Object valorAtual = propAccessor.getPropertyValue(field.getName());
-        
-        while(! valorAtual.equals(valorModificado)){
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Informe o valor de "+field.getName().toUpperCase()+": ");
+        do {
+            try {
+                valorModificado = scanSpecific(field, sc, objeto.getClass());
+            } catch (NoSuchFieldException ex) {
+                ex.printStackTrace();
+            }
 
-            valorModificado = scanSpecificType(field.getType().getSimpleName(), sc);
-
-            propAccessor.setPropertyValue(field.getName(), valorModificado);
-            valorAtual = propAccessor.getPropertyValue(field.getName());
-        }
+            propAccessor.setPropertyValue(field, valorModificado);
+            valorAtual = propAccessor.getPropertyValue(field);
+            
+            if(valorAtual == null)
+                valorAtual = new Object();
+            
+        } while (! valorAtual.equals(valorModificado)) ;
     }
     
     public Aluno lerAluno() {
-        Scanner alunoScan = new Scanner(System.in);
         Aluno aluno = new Aluno();
-        System.out.println("Nome:");
-        aluno.setNome(alunoScan.nextLine());
-
-        String data = lerData(alunoScan);
-
-        if (!validarData(data)) {
-            System.out.println("Padrão de data inválido. Por favor, insira no formato (dd/MM/yyyy).");
-            data = lerData(alunoScan);
-        }
-
-        aluno.setDataNascimento(convertStringToCalendar(data));
-
-        aluno.setGenero(lerGenero(alunoScan));
-
-        String cpf = lerCpf(alunoScan);
-        while(! aluno.setCpf(cpf)){
-            cpf = lerCpf(alunoScan);
-        }
-
+        setValue("genero",aluno);
+        setValue("nome", aluno);
+        setValue("dataNascimento",aluno);
+        setValue("cpf",aluno);
         return aluno;
     }
     
-    private Genero lerGenero(Scanner sc){
-        String possiveis = "(MASCULINO, FEMININO, OUTROS)";
-
-        String wanted = "";
-        
-        while(! existsInGenero(wanted)){
-            System.out.println("Genero "+possiveis+":");
-            wanted = sc.nextLine().toUpperCase();
-        }
-        
-        return Genero.valueOf(wanted);
-    }
-    
-    private boolean existsInGenero(String wanted){
-        Genero generos[] = Genero.values();
-        for (Genero genero : generos) {
-            if(genero.name().equals(wanted.toUpperCase()))
-                return true;
-        }
-        return false;
-    }
-
-    private String lerCpf(Scanner alunoScan) {
-        System.out.println("CPF (xxx.xxx.xxx-xx):");
-        return alunoScan.nextLine();
-    }
-
-    private boolean validarData(String data) {
-        return this.dateValidator.validate(data);
+    public Disciplina lerDisciplina() {
+        Disciplina disciplina = new Disciplina();
+        setValue("nome",disciplina);
+        setValue("periodo",disciplina);
+        setValue("professor",disciplina);
+        setValue("vagas",disciplina);
+        return disciplina;
     }
 
     private Calendar convertStringToCalendar(String dataRecebida) {
-
+        
         Calendar dataNascimento = null;
         try {
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
@@ -196,18 +215,8 @@ public class Menu {
         return dataNascimento;
     }
 
-    public String lerData(Scanner alunoScan) {
-        System.out.println("Data de Nascimento (dd/MM/yyyy):");
-        String dataRecebida = alunoScan.nextLine();
-
-        return dataRecebida;
-    }
-    
     public void listarAlunos(){
-        List<Aluno> alunos = buscarAlunos();
-        for (Aluno aluno : alunos) {
-            System.out.println(aluno);
-        }
+        listar(buscarAlunos());
     }
     
     private List<Aluno> buscarAlunos(){
@@ -224,9 +233,12 @@ public class Menu {
     }
     
     private void listarMatriculados(){
-        List<Aluno> alunos = buscarMatriculados();
-        for (Aluno aluno : alunos) {
-            System.out.println(aluno);
+        listar(buscarMatriculados());
+    }
+    
+    private void listar(List<?> objects){
+        for (Object object : objects) {
+            System.out.println(object);
         }
     }
     
@@ -243,20 +255,20 @@ public class Menu {
     
     private Disciplina selecionarDisciplina(){
         System.out.println("Selecione uma das disciplinas abaixo: \n");
-        listarDisciplinas();
+        listar(buscarDisciplinas());
         System.out.println("Selecionar por:\n1 - ID\n2 - Nome e Período");
         Scanner opc = new Scanner(System.in);
         switch(opc.nextInt()){
             case 1:
-                return buscarPorId();
+                return buscarDisciplinaPorId();
             case 2:
-                return buscarPorNomeEPeriodo();
+                return buscarDisciplinaPorNomeEPeriodo();
             default:
                 return null;
         }
     }
     
-    private Disciplina buscarPorNomeEPeriodo(){
+    private Disciplina buscarDisciplinaPorNomeEPeriodo(){
         Scanner scanId = new Scanner(System.in);
         System.out.println("Infome o nome desejado: ");
         String nome = scanId.nextLine();
@@ -265,9 +277,9 @@ public class Menu {
         return new Disciplina().selecionar(nome, periodo);
     }
     
-    private Disciplina buscarPorId(){
+    private Disciplina buscarDisciplinaPorId(){
         Scanner scanId = new Scanner(System.in);
-        System.out.println("Infome o id desejado: ");
+        System.out.println("Infome o id do elemento desejado: ");
         int id = scanId.nextInt();
         return new Disciplina().selecionar(new Long(id));
     }
@@ -276,10 +288,17 @@ public class Menu {
         return new Disciplina().selecionarTodos();
     }
     
-    private void listarDisciplinas(){
-        List<Disciplina> disciplinas = buscarDisciplinas();
-        for (Disciplina disciplina : disciplinas) {
-            System.out.println(disciplina);
-        }
+    private Aluno buscarAlunoPorId(){
+        Scanner scanId = new Scanner(System.in);
+        listar(buscarAlunos());
+        System.out.println("Infome o id do elemento desejado: ");
+        int id = scanId.nextInt();
+        return new Aluno().selecionar(new Long(id));
+    }
+    
+    private void listarDisciplinasDeUmAluno(){
+        Aluno a = buscarAlunoPorId();
+        List<Disciplina> disciplinas = a.selecionarDisciplinas();
+        listar(disciplinas);
     }
 }

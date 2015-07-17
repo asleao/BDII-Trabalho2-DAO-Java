@@ -178,8 +178,6 @@ public abstract class MatriculaDAO extends DAO{
         return null;
     }
     
-    
-    
     private List<Matricula> fetchMatriculas(ResultSet rs){
         
         List<Matricula> fetchedMatriculas = new ArrayList<>();
