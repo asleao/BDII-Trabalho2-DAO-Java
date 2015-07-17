@@ -8,8 +8,11 @@ package br.edu.ifes.bd2dao.cgt;
 import br.edu.ifes.bd2dao.cdp.Aluno;
 import br.edu.ifes.bd2dao.cdp.Disciplina;
 import br.edu.ifes.bd2dao.cdp.Genero;
+import br.edu.ifes.bd2dao.cdp.Matricula;
 import br.edu.ifes.bd2dao.exceptions.IdNotFoundException;
 import br.edu.ifes.bd2dao.util.DateValidator;
+import br.edu.ifes.bd2dao.util.datafactory.AlunoData;
+import br.edu.ifes.bd2dao.util.datafactory.DisciplinaData;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,8 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.fluttercode.datafactory.impl.DataFactory;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -33,6 +35,10 @@ public class Menu {
 
     DateValidator dateValidator = new DateValidator();
     HashMap<String, String> messages = new HashMap<>();
+    DataFactory df = new DataFactory();
+    AlunoData alunoData = new AlunoData();
+    DisciplinaData disciplinaData = new DisciplinaData();
+    Matricula matricula = new Matricula();
     
     public Menu(){
         this.messages.put("CPF", "CPF: (xxx.xxx.xxx-xx)");
@@ -43,6 +49,9 @@ public class Menu {
         this.messages.put("PERIODO", "Período: (YYYY/S) : ");
         this.messages.put("PROFESSOR", "Professor: ");
         this.messages.put("VAGAS", "Vagas: ");
+        alunoData.criaAlunoRandom(df, 10);
+        disciplinaData.criaDisciplinaRandom(df, 10);        
+        matricula.matriculaAlunos();
     }
 
     public void load() {

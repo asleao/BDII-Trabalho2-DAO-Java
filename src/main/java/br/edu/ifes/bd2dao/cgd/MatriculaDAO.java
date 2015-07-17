@@ -211,5 +211,30 @@ public abstract class MatriculaDAO extends DAO{
         return fetchedMatriculas;
     }
     
-    
+    public void matriculaAlunos(){
+        List<Aluno> listaAluno = new Aluno().selecionarTodos();
+        List<Disciplina> listaDisciplina = new Disciplina().selecionarTodos();
+        
+        for (Aluno aluno : listaAluno) {
+            for (Disciplina disciplina : listaDisciplina) {
+                salvarMatricula(criaMatricula(aluno, disciplina));                
+            }
+        }
+        
+    }
+
+    private void salvarMatricula(Matricula matricula){
+        try {
+            matricula.inserir(matricula);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private Matricula criaMatricula(Aluno aluno, Disciplina disciplina) {
+        Matricula matricula = new Matricula ();
+        matricula.setAluno(aluno);
+        matricula.setDisciplina(disciplina);
+        
+        return matricula;
+    }
 }
