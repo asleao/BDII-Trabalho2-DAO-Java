@@ -49,9 +49,25 @@ public class Menu {
         this.messages.put("PERIODO", "Período: (YYYY/S) : ");
         this.messages.put("PROFESSOR", "Professor: ");
         this.messages.put("VAGAS", "Vagas: ");
+        
+        this.messages.put("SUCESSO_INSERIR", "\n%1$s Inserido com sucesso\n");
+        this.messages.put("SUCESSO_DELETAR", "\n%1$s Excluido com sucesso\n");
+        this.messages.put("SUCESSO_ATUALIZAR", "\n%1$s Atualizado com sucesso\n");
+        this.messages.put("INICIANDO_POPULACAO", "Iniciando População do Banco...\n");
+        this.messages.put("ENCERRANDO_POPULACAO", "...Encerrando População do Banco\n\nBanco Populado com Sucesso!\n");
+    }
+
+    private void popularBanco() {
+        System.out.println(this.messages.get("INICIANDO_POPULACAO"));
         alunoData.criaAlunoRandom(df, 10);
         disciplinaData.criaDisciplinaRandom(df, 10);        
         matricula.matriculaAlunos();
+        System.out.println(this.messages.get("ENCERRANDO_POPULACAO"));
+    }
+    
+    private void imprimeMensagem(String objeto, String operacao){
+        operacao = operacao.toUpperCase();
+        System.out.println(String.format(this.messages.get("SUCESSO_"+operacao),objeto));
     }
 
     public void load() {
@@ -67,17 +83,21 @@ public class Menu {
             System.out.println("7 - Listar Disciplinas");
             System.out.println("8 - Buscar Disciplina");
             System.out.println("9 - Disciplinas de um aluno");
+            System.out.println("10 - Popular Banco");
             System.out.println("0 - Sair");
             menu = menuEntrada.nextInt();
             switch (menu) {
                 case 1:
                     new Aluno().inserir(lerAluno());
+                    imprimeMensagem("Aluno", "inserir");
                     break;
                 case 2:
                     atualizarAluno();
+                    imprimeMensagem("Aluno", "atualizar");
                     break;
                 case 3:
                     deletarAluno();
+                    imprimeMensagem("Aluno", "deletar");
                     break;
                 case 4:
                     listarMatriculados();
@@ -87,6 +107,7 @@ public class Menu {
                     break;
                 case 6:
                     new Disciplina().inserir(lerDisciplina());
+                    imprimeMensagem("Disciplina", "inserir");
                     break;
                 case 7:
                     listar(buscarDisciplinas());
@@ -95,6 +116,9 @@ public class Menu {
                     System.out.println(selecionarDisciplina());
                 case 9:
                     listarDisciplinasDeUmAluno();
+                    break;
+                case 10:
+                    popularBanco();
             }
         }
     }
@@ -145,7 +169,7 @@ public class Menu {
                     valid = true;
                     break;
                 case "GENERO":
-                    String genero = sc.nextLine();
+                    String genero = sc.nextLine().toUpperCase() ;
                     valid = Genero.exists(genero);
                     if(valid)
                         value = Genero.valueOf(genero);
@@ -193,9 +217,9 @@ public class Menu {
     
     public Aluno lerAluno() {
         Aluno aluno = new Aluno();
-        setValue("genero",aluno);
         setValue("nome", aluno);
         setValue("dataNascimento",aluno);
+        setValue("genero",aluno);
         setValue("cpf",aluno);
         return aluno;
     }

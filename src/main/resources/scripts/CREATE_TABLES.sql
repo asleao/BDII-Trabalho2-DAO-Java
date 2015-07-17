@@ -1,4 +1,4 @@
-﻿CREATE TABLE alunos (
+CREATE TABLE alunos (
 	id SERIAL PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
 	dataNascimento DATE NOT NULL,
@@ -17,6 +17,6 @@ CREATE TABLE disciplinas (
 
 CREATE TABLE matriculas (
         id SERIAL PRIMARY KEY,
-        aluno INT NOT NULL REFERENCES alunos(id),
-        disciplina INT NOT NULL REFERENCES disciplinas(id)
+        aluno INT NOT NULL REFERENCES alunos(id) ON DELETE CASCADE,
+        disciplina INT NOT NULL REFERENCES disciplinas(id) ON DELETE CASCADE
 );
